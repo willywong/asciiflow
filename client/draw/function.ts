@@ -1,5 +1,5 @@
 import { Vector } from "asciiflow/client/vector";
-import { IModifierKeys } from "asciiflow/client/store";
+import { store, IModifierKeys, ToolMode } from "asciiflow/client/store";
 
 /**
  * Common interface for different drawing functions, e.g. box, line, etc.
@@ -39,6 +39,9 @@ export abstract class AbstractDrawFunction implements IDrawFunction {
   getCursor(position: Vector, modifierKeys: IModifierKeys): string {
     return "default";
   }
-  handleKey(value: string, modifierKeys: IModifierKeys): void {}
+  handleKey(value: string, modifierKeys: IModifierKeys): void {
+    //TEST ESC KEY
+    store.setToolMode(ToolMode.BOX);
+  }
   cleanup(): void {}
 }

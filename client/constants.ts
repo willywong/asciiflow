@@ -132,6 +132,7 @@ export const KEY_UP = "<up>";
 export const KEY_DOWN = "<down>";
 export const KEY_LEFT = "<left>";
 export const KEY_RIGHT = "<right>";
+export const KEY_ESC = "<esc>";
 
 // http://stackoverflow.com/questions/4817029/whats-the-best-way-to-detect-a-touch-screen-device-using-javascript
 export const TOUCH_ENABLED = () => 

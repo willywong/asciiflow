@@ -111,6 +111,10 @@ export class Controller {
     if (event.keyCode === 32) {
       this.isSpacePressed = true;
     }
+    if (event.keyCode === 27) {
+      //ESC
+      specialKeyCode = constants.KEY_ESC;
+    }
 
     store.currentTool.handleKey(specialKeyCode, getModifierKeys(event));
   }

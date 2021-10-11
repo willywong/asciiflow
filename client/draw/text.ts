@@ -24,6 +24,7 @@ export class DrawText extends AbstractDrawFunction {
   }
 
   handleKey(value: string, modifierKeys: IModifierKeys) {
+    super.handleKey(value, modifierKeys);
     let newLayer = new Layer();
     if (!!this.textLayer) {
       [newLayer] = newLayer.apply(this.textLayer);
