@@ -1,5 +1,5 @@
 import * as constants from "asciiflow/client/constants";
-import { store, IModifierKeys, ToolMode } from "asciiflow/client/store";
+import { store, IModifierKeys } from "asciiflow/client/store";
 import { Vector } from "asciiflow/client/vector";
 import { screenToCell } from "asciiflow/client/view";
 import { HTMLAttributes } from "react";
@@ -28,6 +28,7 @@ export class Controller {
   private dragOrigin: Vector;
   private dragOriginCell: Vector;
   private lastMoveCell: Vector;
+  public isSpacePressed = false;
 
   startDraw(position: Vector, e: EventWithModifierKeys) {
     this.mode = Mode.DRAW;
@@ -64,28 +65,6 @@ export class Controller {
     // Override some special characters so that they can be handled in one place.
     let specialKeyCode = null;
 
-    if (event.altKey) {
-      store.altPressed = true;
-      if (event.keyCode === "1".charCodeAt(0)) {
-        store.setToolMode(ToolMode.BOX);
-        event.preventDefault();
-      } else if (event.keyCode === "2".charCodeAt(0)) {
-        store.setToolMode(ToolMode.SELECT);
-        event.preventDefault();
-      } else if (event.keyCode === "3".charCodeAt(0)) {
-        store.setToolMode(ToolMode.FREEFORM);
-        event.preventDefault();
-      } else if (event.keyCode === "4".charCodeAt(0)) {
-        store.setToolMode(ToolMode.ARROWS);
-        event.preventDefault();
-      } else if (event.keyCode === "5".charCodeAt(0)) {
-        store.setToolMode(ToolMode.LINES);
-        event.preventDefault();
-      } else if (event.keyCode === "6".charCodeAt(0)) {
-        store.setToolMode(ToolMode.TEXT);
-        event.preventDefault();
-      }
-    }
     if (event.ctrlKey || event.metaKey) {
       if (event.keyCode === 67) {
         specialKeyCode = constants.KEY_COPY;
@@ -130,7 +109,7 @@ export class Controller {
       specialKeyCode = constants.KEY_RIGHT;
     }
     if (event.keyCode === 32) {
-      store.panning = true;
+      this.isSpacePressed = true;
     }
     if (event.keyCode === 27) {
       //ESC
@@ -142,10 +121,7 @@ export class Controller {
 
   handleKeyUp(event: KeyboardEvent) {
     if (event.keyCode === 32) {
-      store.panning = false;
-    }
-    if (!event.altKey) {
-      store.altPressed = false;
+      this.isSpacePressed = false;
     }
   }
 
@@ -206,7 +182,7 @@ export class DesktopController {
 
   handleMouseDown = (e: React.MouseEvent<any>) => {
     // Can drag by holding either the control or meta (Apple) key.
-    if (store.panning) {
+    if (this.controller.isSpacePressed) {
       this.controller.startDrag(Vector.fromMouseEvent(e));
     } else {
       this.controller.startDraw(Vector.fromMouseEvent(e), e);

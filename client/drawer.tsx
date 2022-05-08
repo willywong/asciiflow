@@ -21,7 +21,6 @@ import {
   TextField,
   Snackbar,
   Fab,
-  Popover,
 } from "@material-ui/core";
 import * as Icons from "@material-ui/icons";
 import { useObserver } from "mobx-react";
@@ -32,8 +31,6 @@ import { ControlledDialog } from "asciiflow/client/components/controlled_dialog"
 import { useHistory } from "react-router";
 import { DrawingStringifier } from "asciiflow/client/store/drawing_stringifier";
 import { ExportDialog } from "asciiflow/client/export";
-import { useState } from "react";
-import { ASCII, UNICODE } from "asciiflow/client/constants";
 
 export function Drawer() {
   const history = useHistory();
@@ -240,48 +237,45 @@ export function Drawer() {
                     name="Boxes"
                     tool={ToolMode.BOX}
                     icon={<Icons.CheckBoxOutlineBlank />}
-                  >
-                    <ShortcutChip label={"alt + 1"} hideUntilAlt={true} />
-                  </ToolControl>
+                  />
                   <ToolControl
                     name="Select & Move"
                     tool={ToolMode.SELECT}
                     icon={<Icons.NearMe />}
-                  >
-                    <ShortcutChip label={"alt + 2"} hideUntilAlt={true} />
-                  </ToolControl>
+                  />
                   <ToolControl
                     name="Freeform"
                     tool={ToolMode.FREEFORM}
                     icon={<Icons.Gesture />}
                   >
                     <ListItemSecondaryAction>
-                      <ShortcutChip label={"alt + 3"} hideUntilAlt={true} />
-                      <FreeFormCharacterSelect />
+                      <Chip
+                        variant="outlined"
+                        style={{ marginRight: 10 }}
+                        label={
+                          <span className={styles.freeformLabel}>
+                            {store.freeformCharacter}
+                          </span>
+                        }
+                      />
                     </ListItemSecondaryAction>
                   </ToolControl>
                   <ToolControl
                     name="Arrow"
                     tool={ToolMode.ARROWS}
                     icon={<Icons.TrendingUp />}
-                  >
-                    <ShortcutChip label={"alt + 4"} hideUntilAlt={true} />
-                  </ToolControl>
+                  />
 
                   <ToolControl
                     name="Line"
                     tool={ToolMode.LINES}
                     icon={<Icons.ShowChart />}
-                  >
-                    <ShortcutChip label={"alt + 5"} hideUntilAlt={true} />
-                  </ToolControl>
+                  />
                   <ToolControl
                     name="Text"
                     tool={ToolMode.TEXT}
                     icon={<Icons.TextFields />}
-                  >
-                    <ShortcutChip label={"alt + 6"} hideUntilAlt={true} />
-                  </ToolControl>
+                  />
                 </>
               )}
               <ListItem>
@@ -368,9 +362,8 @@ export function Drawer() {
                   tool.
                 </ToolHelp>
                 <ToolHelp tool={ToolMode.FREEFORM}>
-                  Click and drag to draw freeform characters. Select from the
-                  menu, or press any key on the keyboard to change the character
-                  that will be drawn.
+                  Click and drag to draw freeform characters. Press any key on
+                  the keyboard to change the character that will be drawn.
                 </ToolHelp>
                 <ToolHelp tool={ToolMode.TEXT}>
                   Click on any square and start typing. Press{" "}
@@ -392,8 +385,7 @@ export function Drawer() {
                     redo.
                   </>
                 )}{" "}
-                View shortcuts by pressing <ShortcutChip label={"alt"} />. You
-                can return to the previous version of ASCIIFlow{" "}
+                You can return to the previous version of ASCIIFlow{" "}
                 <a href="legacy">here</a>.
               </div>
             )}
@@ -411,25 +403,16 @@ function ctrlOrCmd() {
   return "ctrl";
 }
 
-function ShortcutChip({
-  label,
-  hideUntilAlt,
-}: {
-  label: string;
-  hideUntilAlt?: boolean;
-}) {
-  return useObserver(() => {
-    if (hideUntilAlt && !store.altPressed) return null;
-    return (
-      <Chip
-        icon={<Icons.KeyboardOutlined />}
-        label={
-          <span style={{ fontFamily: "monospace", fontSize: 12 }}>{label}</span>
-        }
-        size="small"
-      />
-    );
-  });
+function ShortcutChip({ label }: { label: string }) {
+  return (
+    <Chip
+      icon={<Icons.KeyboardOutlined />}
+      label={
+        <span style={{ fontFamily: "monospace", fontSize: 12 }}>{label}</span>
+      }
+      size="small"
+    />
+  );
 }
 
 function ToolControl(
@@ -450,56 +433,6 @@ function ToolControl(
         <ListItemText primary={props.name} />
         {props.children}
       </ListItem>
-    );
-  });
-}
-
-const shortcutKeys = [
-  ...Object.values(UNICODE),
-  ...new Set(Object.values(ASCII)),
-  // All the standard ascii characters.
-  ...Array.from(Array(127 - 33).keys())
-    .map((i) => i + 33)
-    .map((i) => String.fromCharCode(i)),
-];
-function FreeFormCharacterSelect() {
-  const [anchorEl, setAnchorEl] = useState(null);
-  return useObserver(() => {
-    return (
-      <>
-        <Button
-          variant="outlined"
-          className={styles.freeformCharacterButton}
-          onClick={(event) => setAnchorEl(event.currentTarget)}
-        >
-          {store.freeformCharacter}
-        </Button>
-        <Popover
-          open={!!anchorEl}
-          anchorEl={anchorEl}
-          anchorOrigin={{
-            vertical: "center",
-            horizontal: "right",
-          }}
-          onClose={() => setAnchorEl(null)}
-        >
-          <div style={{ maxWidth: 400 }}>
-            {shortcutKeys.map((key, i) => (
-              <Button
-                onClick={() => {
-                  setAnchorEl(null);
-                  store.setToolMode(ToolMode.FREEFORM);
-                  store.freeformCharacter = key;
-                }}
-                className={styles.freeformCharacterButton}
-                key={i}
-              >
-                {key}
-              </Button>
-            ))}
-          </div>
-        </Popover>
-      </>
     );
   });
 }

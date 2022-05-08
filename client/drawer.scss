@@ -20,12 +20,9 @@
   }
 }
 
-:global(.MuiButton-root).freeformCharacterButton {
+.freeformLabel {
   font-family: monospace;
-  padding: 5px;
-  min-width: 40px;
-  border-radius: 10px;
-  text-transform: none;
+  font-size: 1rem;
 }
 
 .helpText {
